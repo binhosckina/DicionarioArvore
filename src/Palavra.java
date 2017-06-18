@@ -24,7 +24,9 @@ public class Palavra {
     public String getSignificado() {
         return significado;
     }
-    
-    
-    
+
+    @Override
+    public String toString() {
+        return palavra + " " + significado;
+    }
 }

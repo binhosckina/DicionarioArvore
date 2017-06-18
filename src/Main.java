@@ -1,4 +1,4 @@
-
+import java.util.ArrayList;
 
 /**
  *
@@ -10,5 +10,12 @@ public class Main {
         Leitura leitura = new Leitura();
         
         leitura.leitura();
+
+        ArrayList<Palavra> listaDePalavras;
+        listaDePalavras = leitura.buscaPalavras("isa");
+
+        for (Palavra p : listaDePalavras) {
+            System.out.println(p.toString());
+        }
     }
 }

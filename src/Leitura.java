@@ -28,7 +28,7 @@ public class Leitura {
         this.raizes = new ArrayList<>();
     }
     
-     private static final class Node {
+    private static final class Node {
 
         public Node father;
         public char element;
@@ -42,14 +42,13 @@ public class Leitura {
             this.sons = new LinkedList<>();
         }
     }
-    
-    
+
     public void leitura() {             
             Path path1 = Paths.get("nomes.csv");
         try (Scanner sc = new Scanner(Files.newBufferedReader(path1, Charset.defaultCharset()))) {
             sc.useDelimiter("[;\n]");
             while (sc.hasNext()) {
-                String palavra = sc.next().toLowerCase();
+                String palavra = sc.next();
                 String sig = sc.next();
                 addNode(palavra, sig);
             }
@@ -59,14 +58,77 @@ public class Leitura {
         }
 
     }
-    
-//    public imprimeArvore(){
-//    
-//    }
-    
+
+    /**
+     * Método res
+     * @param entrada
+     * @return
+     */
+    public ArrayList<Palavra> buscaPalavras(String entrada) {
+        if(entrada == null) return null;
+        ArrayList<Palavra> listaDePalavras = new ArrayList<>();
+        entrada = entrada.toUpperCase();
+        Node root = getRoot(entrada.charAt(0));
+        Node subRoot = buscaSubArvore(root, entrada, 1);
+        listaDePalavras = positionsPreAux(subRoot, "", entrada, listaDePalavras);
+        return listaDePalavras;
+    }
+
+    public ArrayList positionsPre() {
+        ArrayList res = new ArrayList();
+        Node root = getRoot('a');
+        res = positionsPreAux(root, "", "", res);
+        return res;
+    }
+
+    private ArrayList<Palavra> positionsPreAux(Node n, String palavraIncompleta, String iniciais, ArrayList<Palavra> listaDePalavras) {
+        if(n == null)
+            return listaDePalavras;
+        if(n.significado != null && n.significado != "") {
+            String iniciaisAux = "";
+            if (iniciais.length() > 0) {
+                for (int i = 0; i < iniciais.length() - 1; i++) {
+                    iniciaisAux += iniciais.charAt(i);
+                }
+            }
+            listaDePalavras.add(new Palavra(iniciaisAux + palavraIncompleta + n.element, n.significado));
+        }
+        if(n.sons != null) {
+            for (int i = 0; i < n.sons.size(); i++) {
+                positionsPreAux(n.sons.get(i), palavraIncompleta + n.element, iniciais, listaDePalavras);
+            }
+        }
+        return listaDePalavras;
+    }
+
+    private Node buscaSubArvore(Node raiz, String entrada, int pos) {
+        if(raiz == null) {
+            return raiz;
+        }
+
+        if (pos == entrada.length()) {
+            return raiz;
+        }
+
+        if(raiz.sons != null) {
+            for (int i = 0; i < raiz.sons.size(); i++) {
+                if (raiz.sons.get(i).element == entrada.charAt(pos)) {
+                    raiz = buscaSubArvore(raiz.sons.get(i), entrada, pos + 1);
+                    break;
+                }
+            }
+        }
+        return raiz;
+    }
+
+    public String imprimeArvore(){
+
+        return "";
+    }
+
     private Node getRoot(char c) {
         Node arvoreRoot = null;
-            
+
         for (int i = 0; i < raizes.size(); i++) {
             if (c == raizes.get(i).element) {
                 arvoreRoot = raizes.get(i);
@@ -81,53 +143,39 @@ public class Leitura {
         return arvoreRoot;
     }
 
-    
+
     public void addNode(String palavra, String sig) {
-        
+
         Node root = getRoot(palavra.charAt(0));
-        addNodeAux(palavra, sig, 0, root);
-             
+        addNodeAux(palavra.toUpperCase(), sig, 1, root, "");
+
     }
-    
-    private void addNodeAux(String palavra,String sig, int pos, Node n){
+
+    private void addNodeAux(String palavra, String sig, int pos, Node n, String print){
+
         if(pos == palavra.length()){
             n.significado = sig;
-            System.out.println(n.element + " " + n.significado);
+            //System.out.println(print + " " + n.significado);
             return;
         }
+
         char letra = palavra.charAt(pos);
         Node aux = null;
-        
+
         for (int i = 0; i < n.sons.size(); i++) {
             if(letra == n.sons.get(i).element){
                 aux = n.sons.get(i);
                 break;
             }
         }
+
         if(aux == null){
-            aux = new Node(letra); 
+            aux = new Node(letra);
             n.sons.add(aux);
         }
-        
-        addNodeAux(palavra, sig, pos+1, aux);
-        
+
+        addNodeAux(palavra, sig, pos+1, aux, print+letra);
+
     }
-    
-//    public LinkedList positionsPre() {
-//        LinkedList res = new LinkedList();
-//        Node root = getRoot('a');
-//        positionsPreAux(root, res);
-//        return res;
-//    }
-//    private void positionsPreAux(Node n, LinkedList res) {
-//        if(n == null)
-//            return;
-//        res.add(n.element);
-//        if(n.sons != null)
-//            positionsPreAux(n.left, res);
-//        if(n.right != null)
-//            positionsPreAux(n.right, res);
-//    }
-    
     
 }
